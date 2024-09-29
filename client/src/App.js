@@ -20,7 +20,7 @@ const App = () => {
         "https://text-to-speech-api-liart.vercel.app/api/speech",
         { text }
       );
-
+      console.log("respoonse is:  ", response);
       if (response.status === 200) {
         setAudioBlob(response.data);
       }
@@ -31,11 +31,13 @@ const App = () => {
     }
   };
   const useObjectUrl = (blob) => {
+    console.log("blob", blob);
+
     const url = useMemo(
       () => (blob ? URL.createObjectURL(blob) : null),
       [blob]
     );
-
+    console.log("url is ", url);
     useEffect(() => {
       return () => {
         if (url) {
