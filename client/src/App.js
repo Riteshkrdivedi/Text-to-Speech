@@ -13,7 +13,6 @@ const App = () => {
   const delay = 300;
   axios.defaults.withCredentials = true;
 
-  // Updated fetchAudio function
   const fetchAudio = async (text) => {
     try {
       setIsLoading(true);
@@ -21,15 +20,14 @@ const App = () => {
         "https://text-to-speech-api-liart.vercel.app/api/speech",
         { text },
         {
-          responseType: "arraybuffer", // Set response type to 'arraybuffer'
+          responseType: "arraybuffer",
         }
       );
       console.log("Response:", response);
 
       if (response.status === 200) {
-        // Create a blob from the response data
         const audioBlob = new Blob([response.data], { type: "audio/wav" });
-        setAudioBlob(audioBlob); // Store the blob in state
+        setAudioBlob(audioBlob);
         console.log("Blob created successfully:", audioBlob);
       }
     } catch (error) {
