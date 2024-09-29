@@ -5,7 +5,14 @@ const { createClient } = require("@deepgram/sdk");
 require("dotenv").config();
 
 const app = express();
-app.use(cors());
+const corsOptions = {
+  origin: "https://text-to-speech-client.vercel.app/", // Update with your deployed URL
+  methods: ["POST", "GET"],
+  credentials: true,
+};
+app.use(cors(corsOptions));
+
+// app.use(cors());
 app.use(express.json());
 const port = process.env.port || 5000;
 

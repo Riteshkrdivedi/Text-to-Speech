@@ -16,11 +16,7 @@ const App = () => {
   const fetchAudio = async (text) => {
     try {
       setIsLoading(true);
-      const response = await axios.post(
-        "/api/speech",
-        { text },
-        { responseType: "blob" }
-      );
+      const response = await axios.post("/api/speech", { text });
 
       if (response.status === 200) {
         setAudioBlob(response.data);
