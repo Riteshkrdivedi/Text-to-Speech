@@ -8,21 +8,29 @@ const App = () => {
   const [wordIndex, setWordIndex] = useState(0);
 
   const [audioBlob, setAudioBlob] = useState(null);
-  // const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const delay = 300;
   axios.defaults.withCredentials = true;
+
+  // Updated fetchAudio function
   const fetchAudio = async (text) => {
     try {
       setIsLoading(true);
       const response = await axios.post(
         "https://text-to-speech-api-liart.vercel.app/api/speech",
-        { text }
+        { text },
+        {
+          responseType: "arraybuffer", // Set response type to 'arraybuffer'
+        }
       );
-      console.log("respoonse is:  ", response);
+      console.log("Response:", response);
+
       if (response.status === 200) {
-        setAudioBlob(response.data);
+        // Create a blob from the response data
+        const audioBlob = new Blob([response.data], { type: "audio/wav" });
+        setAudioBlob(audioBlob); // Store the blob in state
+        console.log("Blob created successfully:", audioBlob);
       }
     } catch (error) {
       console.error("Error fetching audio:", error);
@@ -30,6 +38,7 @@ const App = () => {
       setIsLoading(false);
     }
   };
+
   const useObjectUrl = (blob) => {
     console.log("blob", blob);
 
@@ -48,10 +57,6 @@ const App = () => {
 
     return url;
   };
-
-  // const handleInputChange = (e) => {
-  //   setText(e.target.value);
-  // };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -72,7 +77,9 @@ const App = () => {
       return () => clearTimeout(timer);
     }
   }, [wordIndex, words]);
+
   const audioUrl = useObjectUrl(audioBlob);
+
   useEffect(() => {
     if (audioUrl) {
       const audio = new Audio(audioUrl);
@@ -86,6 +93,7 @@ const App = () => {
         });
     }
   }, [audioUrl]);
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-500 via-blue-600 to-indigo-950 text-white p-5">
       <h1 className="text-4xl font-bold mb-8">Text-to-Speech Streaming</h1>
