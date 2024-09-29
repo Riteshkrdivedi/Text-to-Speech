@@ -16,7 +16,10 @@ const App = () => {
   const fetchAudio = async (text) => {
     try {
       setIsLoading(true);
-      const response = await axios.post("/api/speech", { text });
+      const response = await axios.post(
+        "https://text-to-speech-sand.vercel.app/api/speech",
+        { text }
+      );
 
       if (response.status === 200) {
         setAudioBlob(response.data);
