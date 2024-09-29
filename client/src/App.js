@@ -17,12 +17,11 @@ const App = () => {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        "http://localhost:5000/api/speech",
+        "/api/speech",
         { text },
-        {
-          responseType: "blob",
-        }
+        { responseType: "blob" }
       );
+
       if (response.status === 200) {
         setAudioBlob(response.data);
       }
