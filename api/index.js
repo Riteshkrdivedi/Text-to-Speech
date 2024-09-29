@@ -18,6 +18,10 @@ const port = process.env.port || 5000;
 
 const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
+app.get("/", async (req, res) => {
+  res.json("hello");
+});
+
 app.post("/api/speech", async (req, res) => {
   const { text } = req.body;
 

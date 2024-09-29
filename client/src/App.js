@@ -12,12 +12,12 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const delay = 300;
-
+  axios.defaults.withCredentials = true;
   const fetchAudio = async (text) => {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        "https://text-to-speech-sand.vercel.app/api/speech",
+        "https://text-to-speech-api-liart.vercel.app/api/speech",
         { text }
       );
 
