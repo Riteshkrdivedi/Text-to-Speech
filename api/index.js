@@ -6,7 +6,7 @@ require("dotenv").config();
 
 const app = express();
 const corsOptions = {
-  origin: "https://text-to-speech-client.vercel.app/",
+  origin: "https://text-to-speech-client.vercel.app",
   methods: ["POST", "GET"],
   credentials: true,
 };
@@ -22,43 +22,40 @@ app.get("/", async (req, res) => {
   res.json("hello");
 });
 
-app.post(
-  "https://text-to-speech-client.vercel.app/api/speech",
-  async (req, res) => {
-    const { text } = req.body;
+app.post("/api/speech", async (req, res) => {
+  const { text } = req.body;
 
-    if (!text) {
-      return res.status(400).json({ error: "Text is required" });
-    }
-
-    try {
-      const response = await deepgram.speak.request(
-        { text },
-        {
-          model: "aura-asteria-en",
-          encoding: "linear16",
-          container: "wav",
-        }
-      );
-
-      const stream = await response.getStream();
-
-      if (stream) {
-        const buffer = await getAudioBuffer(stream);
-
-        res.setHeader("Content-Type", "audio/wav");
-        res.setHeader("Content-Length", buffer.length);
-
-        res.send(buffer);
-      } else {
-        res.status(500).json({ error: "Error generating audio" });
-      }
-    } catch (error) {
-      console.error("Error generating speech:", error);
-      res.status(500).json({ error: "Failed to convert text to speech" });
-    }
+  if (!text) {
+    return res.status(400).json({ error: "Text is required" });
   }
-);
+
+  try {
+    const response = await deepgram.speak.request(
+      { text },
+      {
+        model: "aura-asteria-en",
+        encoding: "linear16",
+        container: "wav",
+      }
+    );
+
+    const stream = await response.getStream();
+
+    if (stream) {
+      const buffer = await getAudioBuffer(stream);
+
+      res.setHeader("Content-Type", "audio/wav");
+      res.setHeader("Content-Length", buffer.length);
+
+      res.send(buffer);
+    } else {
+      res.status(500).json({ error: "Error generating audio" });
+    }
+  } catch (error) {
+    console.error("Error generating speech:", error);
+    res.status(500).json({ error: "Failed to convert text to speech" });
+  }
+});
 
 const getAudioBuffer = async (response) => {
   const reader = response.getReader();
