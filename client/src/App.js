@@ -8,7 +8,7 @@ const App = () => {
   const [wordIndex, setWordIndex] = useState(0);
 
   const [audioBlob, setAudioBlob] = useState(null);
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const delay = 300;
@@ -28,7 +28,6 @@ const App = () => {
       }
     } catch (error) {
       console.error("Error fetching audio:", error);
-      setError(error);
     } finally {
       setIsLoading(false);
     }
