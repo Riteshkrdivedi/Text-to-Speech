@@ -6,6 +6,8 @@ const App = () => {
   const [words, setWords] = useState([]);
   const [currentWord, setCurrentWord] = useState("");
   const [wordIndex, setWordIndex] = useState(0);
+  const [sentences, setSentences] = useState([]);
+  const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
 
   const [audioBlob, setAudioBlob] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -14,12 +16,12 @@ const App = () => {
 
   axios.defaults.withCredentials = true;
 
-  const fetchAudio = async (text) => {
+  const fetchAudio = async (sentence) => {
     try {
       setIsLoading(true);
       const response = await axios.post(
         "https://text-to-speech-api-liart.vercel.app/api/speech",
-        { text },
+        { text: sentence },
         {
           responseType: "arraybuffer",
         }
@@ -28,8 +30,8 @@ const App = () => {
 
       if (response.status === 200) {
         const audioBlob = new Blob([response.data], { type: "audio/wav" });
-        setAudioBlob(audioBlob);
-        console.log("Blob created successfully:", audioBlob);
+        const audioUrl = URL.createObjectURL(audioBlob);
+        playAudio(audioUrl);
       }
     } catch (error) {
       console.error("Error fetching audio:", error);
@@ -59,11 +61,24 @@ const App = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetchAudio(text);
+
     setWords(text.trim().split(" "));
     setCurrentWord("");
     setWordIndex(0);
+    const sentenceArray = text
+      .split(/[.!?]+/)
+      .map((sentence) => sentence.trim())
+      .filter((sentence) => sentence.length > 0);
+
+    setSentences(sentenceArray);
+    setCurrentSentenceIndex(0);
   };
+
+  useEffect(() => {
+    if (sentences.length > 0 && currentSentenceIndex < sentences.length) {
+      fetchAudio(sentences[currentSentenceIndex]);
+    }
+  }, [currentSentenceIndex, sentences]);
 
   useEffect(() => {
     if (words.length > 0 && wordIndex < words.length) {
@@ -79,19 +94,20 @@ const App = () => {
 
   const audioUrl = useObjectUrl(audioBlob);
 
-  useEffect(() => {
-    if (audioUrl) {
-      const audio = new Audio(audioUrl);
-      audio
-        .play()
-        .then(() => {
-          console.log("Audio is playing");
-        })
-        .catch((error) => {
-          console.error("Audio play error:", error);
-        });
-    }
-  }, [audioUrl]);
+  const playAudio = (audioUrl) => {
+    const audio = new Audio(audioUrl);
+    audio
+      .play()
+      .then(() => {
+        console.log("Audio is playing");
+        audio.onended = () => {
+          setCurrentSentenceIndex((prevIndex) => prevIndex + 1);
+        };
+      })
+      .catch((error) => {
+        console.error("Audio play error:", error);
+      });
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-500 via-blue-600 to-indigo-950 text-white p-5">
