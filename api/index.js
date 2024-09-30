@@ -1,3 +1,4 @@
+/*
 const express = require("express");
 const cors = require("cors");
 // const fs = require("fs");
@@ -78,4 +79,70 @@ const getAudioBuffer = async (response) => {
 
 app.listen(port, () => {
   console.log("Server is running on port 5000");
+});
+*/
+const express = require("express");
+const cors = require("cors");
+const { createClient } = require("@deepgram/sdk");
+require("dotenv").config();
+
+const app = express();
+
+const corsOptions = {
+  origin: "https://text-to-speech-client.vercel.app",
+  methods: ["POST", "GET"],
+  credentials: true,
+};
+app.use(cors(corsOptions));
+app.use(express.json());
+
+const port = process.env.PORT || 5000;
+
+const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
+
+app.get("/", async (req, res) => {
+  res.json("hello");
+});
+
+app.post("/api/speech", async (req, res) => {
+  const { text } = req.body;
+
+  if (!text) {
+    return res.status(400).json({ error: "Text is required" });
+  }
+
+  try {
+    const response = await deepgram.speak.request(
+      { text },
+      {
+        model: "aura-asteria-en",
+        encoding: "linear16",
+        container: "wav",
+      }
+    );
+
+    const stream = await response.getStream();
+
+    if (stream) {
+      // Set headers for chunked response
+      res.setHeader("Content-Type", "audio/wav");
+      res.setHeader("Transfer-Encoding", "chunked");
+
+      // Pipe the stream directly to the response
+      stream.pipe(res);
+
+      stream.on("end", () => {
+        res.end();
+      });
+    } else {
+      res.status(500).json({ error: "Error generating audio" });
+    }
+  } catch (error) {
+    console.error("Error generating speech:", error);
+    res.status(500).json({ error: "Failed to convert text to speech" });
+  }
+});
+
+app.listen(port, () => {
+  console.log("Server is running on port " + port);
 });
