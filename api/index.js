@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-// const fs = require("fs");
+
 const { createClient } = require("@deepgram/sdk");
 require("dotenv").config();
 
@@ -10,16 +10,16 @@ const corsOptions = {
   methods: ["POST", "GET"],
   credentials: true,
 };
-app.use(cors(corsOptions));
 
-// app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
+
 const port = process.env.port || 5000;
 
 const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
 app.get("/", async (req, res) => {
-  res.json("hello");
+  res.json("hello Server is Working fine");
 });
 
 app.post("/api/speech", async (req, res) => {

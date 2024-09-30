@@ -11,6 +11,7 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const delay = 300;
+
   axios.defaults.withCredentials = true;
 
   const fetchAudio = async (text) => {
@@ -58,10 +59,10 @@ const App = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    fetchAudio(text);
     setWords(text.trim().split(" "));
     setCurrentWord("");
     setWordIndex(0);
-    fetchAudio(text);
   };
 
   useEffect(() => {
