@@ -6,7 +6,7 @@ require("dotenv").config();
 
 const app = express();
 const corsOptions = {
-  origin: "https://text-to-speech-client.vercel.app",
+  origin: "https://text-to-speech-client.vercel.app || http://localhost:3000",
   methods: ["POST", "GET"],
   credentials: true,
 };
